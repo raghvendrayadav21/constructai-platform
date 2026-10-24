@@ -69,11 +69,18 @@ async def root():
 
 @app.get("/health", tags=["Health"])
 async def health_check():
-    api_key = os.getenv("GEMINI_API_KEY", "")
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    groq_key = os.getenv("GROQ_API_KEY", "")
+    is_configured = bool(
+        (gemini_key and "your_" not in gemini_key) or
+        (groq_key and "your_" not in groq_key)
+    )
     return {
         "status": "healthy",
-        "gemini_configured": bool(api_key and api_key != "your_gemini_api_key_here"),
-        "weather_configured": bool(os.getenv("WEATHER_API_KEY", ""))
+        "ai_configured": is_configured,
+        "gemini_configured": bool(gemini_key and gemini_key.startswith("AIzaSy")),
+        "groq_configured": bool(groq_key and groq_key.startswith("gsk_") or gemini_key.startswith("gsk_")),
+        "weather_configured": bool(os.getenv("WEATHER_API_KEY", "") and "your_" not in os.getenv("WEATHER_API_KEY", ""))
     }
 
 
