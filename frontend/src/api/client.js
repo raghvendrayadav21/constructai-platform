@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Clean up URL format ensuring trailing slashes are removed and /api is appended
+const sanitizedUrl = rawApiUrl.replace(/\/+$/, '');
+const BASE_URL = sanitizedUrl.endsWith('/api') ? sanitizedUrl : `${sanitizedUrl}/api`;
+const ROOT_URL = sanitizedUrl.replace(/\/api\/?$/, '');
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -62,7 +66,7 @@ export const knowledgeAPI = {
 
 // ── Health ────────────────────────────────────────────────
 export const healthAPI = {
-  check: () => axios.get('http://localhost:8000/health'),
+  check: () => axios.get(`${ROOT_URL}/health`),
 };
 
 export default api;
